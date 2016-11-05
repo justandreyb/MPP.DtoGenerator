@@ -1,0 +1,35 @@
+﻿<#@ template debug="false" language="C#" #>
+<#@ output extension=".cs" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Collections.Generic" #>
+
+<# DTO.Class currentClass; #>
+
+public class <#=this.currrentClass.ClassName#> {
+<#	
+	
+	container.PropertyList.ForEach(value => {    
+		String type = value.Type;
+		String format = value.Format;
+
+		switch (type) {
+			case "string":
+				if (format.Equals("byte")) { type = "byte"; }
+				else if (format.Equals("date")) { type = "System.DateTime"; }
+				else if (format.Equals("string")) { type = "string"; }
+				break;
+			case "number":
+				type = format;
+				break;
+			case "integer":
+				if (format.Equals("int32")) { type = "System.Int32"; }
+				else if (format.Equals("int64")) { type = "System.Int64"; }
+				break;
+			case "boolean":
+				type = "bool";
+				break;
+		}						
+		this.WriteLine("\tpublic {0} {1} {{ get; set;}}", type,value.Name);
+	});
+#>
+}
