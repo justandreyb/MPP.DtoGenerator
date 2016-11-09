@@ -1,0 +1,42 @@
+﻿<#@ template language="C#" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ parameter name="currentClass" type="DTOGenerator.DTO.Class" #>
+
+public class <#=this.currentClass.ClassName#> {
+<#	
+
+	currentClass.PropertyList.ForEach(value => {    
+		String type = value.Type;
+		String format = value.Format;
+
+		switch (type) {
+			case "string":
+				type = "";
+				if (format.Equals("byte")) { type = "byte"; }
+				else if (format.Equals("date")) { type = "System.DateTime"; }
+				else if (format.Equals("string")) { type = "string"; }
+				break;
+			case "number":
+				type = "";
+				if (format.Equals("double")) { type = "double"; }
+				else if (format.Equals("float")) { type = "float"; }
+				break;
+			case "integer":
+				type = "";
+				if (format.Equals("int32")) { type = "System.Int32"; }
+				else if (format.Equals("int64")) { type = "System.Int64"; }
+				break;
+			case "boolean":
+				type = "bool";
+				break;
+			default:
+				type = "System.Object";
+				break;
+		}
+		if (value.Name != null) {
+			if (type != "") { this.WriteLine("\tpublic {0} {1} {{ get; set;}}", type, value.Name); }
+		}
+	});
+#>
+}

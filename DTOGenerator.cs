@@ -11,7 +11,7 @@ using DTOGenerator.SafetyThreadsExecuting;
 
 namespace DTOGenerator
 {
-    class DTOGenerator : IDTOGenerator
+    class DTOGenerator : IDTOGenerator, IDisposable
     {
         private DTOContainer container;
         private readonly object lockObject = new object();
@@ -52,26 +52,30 @@ namespace DTOGenerator
         public void generate(String outputDir)
         {
             var finished = new CountdownEvent(1); // Used to wait for the completion of all work items.
-            for (int i = 0; i < container.getClasses().Count; i++)
+            if (container.getClasses() != null)
             {
-                finished.AddCount();
-                semaphore.Wait();
-                ThreadPool.QueueUserWorkItem(
-                    (state) => {
-                        try
+                for (int i = 0; i < container.getClasses().Count; i++)
+                {
+                    finished.AddCount();
+                    semaphore.Wait();
+                    ThreadPool.QueueUserWorkItem(
+                        (state) =>
                         {
-                            createClass(outputDir);
+                            try
+                            {
+                                createClass(outputDir);
+                            }
+                            finally
+                            {
+                                semaphore.Release();
+                                finished.Signal();
+                            }
                         }
-                        finally
-                        {
-                            semaphore.Release();
-                            finished.Signal();
-                        }
-                    }
-                    , null);
+                        , null);
+                }
+                finished.Signal();
+                finished.Wait();
             }
-            finished.Signal();
-            finished.Wait();
         }
 
         private void createClass(String outputDir)
@@ -84,7 +88,9 @@ namespace DTOGenerator
             }
         }
         private void createCSFile(String outputDir, Class currentClass)
-        { 
+        {
+            if (currentClass != null)
+            {
                 var outputFileName = "";
                 if (!outputDir.Equals(""))
                 {
@@ -95,8 +101,20 @@ namespace DTOGenerator
                 }
 
                 Console.WriteLine("\"{0}\"", outputFileName);
-                //T4 var generatedCode = generateClassCode(currentClass);
-                //T4 File.WriteAllText(outputFileName, generatedCode);
+
+            
+                Template templateInstance = new Template();
+                templateInstance.Session = new Dictionary<String, Object>();
+                templateInstance.Session.Add("currentClass", currentClass); 
+                templateInstance.Initialize();
+                var generatedCode = templateInstance.TransformText();
+                File.WriteAllText(outputFileName, generatedCode);
+            }
+        }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
         }
     }
 }
