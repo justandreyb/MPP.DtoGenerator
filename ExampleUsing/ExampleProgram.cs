@@ -28,13 +28,17 @@ namespace DTOGenerator.ExampleUsing
                 outputDir = args[0];
                 jsonFilePath = args[1];
                 */
+
             var maxThreadCount = Int32.Parse(ConfigurationSettings.AppSettings["maxThreadCount"]);
                 outputDir = "D://Work/C#/MPP/DTOGenerator/bin/GeneratedClasses/";
-                jsonFilePath = "D://Work/C#/MPP/DTOGenerator/bin/JSONFiles/testjson.json";
+                jsonFilePath = "D://Work/C#/MPP/DTOGenerator/bin/JSONFiles/Val.json";
 
-                DTOGenerator generator = new DTOGenerator(jsonFilePath, maxThreadCount);
-               
-                generator.generate(outputDir);
+            //JSONObjectCreator creator = new JSONObjectCreator();
+            //creator.create(jsonFilePath);
+              
+            
+            DTOGenerator generator = new DTOGenerator(jsonFilePath, maxThreadCount);   
+            generator.generate(outputDir);
                 //Console.WriteLine("Generating is complete. Press key.");
                 Console.ReadKey();
         /*    }
