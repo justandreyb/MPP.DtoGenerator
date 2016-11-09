@@ -16,8 +16,8 @@ namespace DTOGenerator.DTO
             set { className = value; }
         }
 
-        private LinkedList<Property> propertyList = new LinkedList<Property>();
-        public LinkedList<Property> PropertyList
+        private List<Property> propertyList = new List<Property>();
+        public List<Property> PropertyList
         {
             get { return propertyList; }
             set { propertyList = value; }
@@ -25,7 +25,7 @@ namespace DTOGenerator.DTO
 
         public void addProperty(Property property)
         {
-            this.propertyList.AddLast(property);
+            this.propertyList.Add(property);
         }
     }
 }
