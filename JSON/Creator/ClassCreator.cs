@@ -1,4 +1,5 @@
 ﻿using DTOGenerator.DTO;
+using DTOGenerator.JSON.Creator;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,22 +10,27 @@ namespace DTOGenerator.JSON
 {
     class ClassCreator
     {
+
         public Class create()
         {
-            Class currentClass = new Class();
-            
+            String className = RandomName.getRandomName();
+            List<Property> properties = new List<Property>();
+            for (int i = 0; i < 4; i++)
+            {
+                properties.Add(createRandomProperty());
+            }
 
-            return currentClass;
+            return createClass(className, properties);
         }
         
-        //create here new classes
-        private Class createClass(String className, LinkedList<Property> fields)
+        private Class createClass(String className, List<Property> fields)
         {
             Class temp = new Class();
             temp.ClassName = className;
             temp.PropertyList = fields;
             return temp;
         }
+
         private Property createProperty(String fieldName, String typeName, String format)
         {
             Property temp = new Property();
@@ -33,9 +39,14 @@ namespace DTOGenerator.JSON
             temp.Format = format;
             return temp;
         }
-        private void addField(Class currentClass, Property property)
+        private Property createRandomProperty()
         {
-            currentClass.addProperty(property);
+            String propertyName = RandomName.getRandomName();
+            String propertyType = RandomName.getRandomType();
+            String propertyFormat = RandomName.getRandomFormat(propertyType);
+
+            return createProperty(propertyName, propertyType, propertyFormat);
         }
+
     }
 }
